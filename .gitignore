@@ -1,0 +1,7 @@
+node_modules/
+LibreHardwareMonitor/
+__pycache__/
+*.pyc
+.env
+venv/
+.venv/
