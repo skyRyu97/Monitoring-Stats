@@ -1,7 +1,7 @@
 import clr, time, psutil, os, sys, requests
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-clr.AddReference(r"C:\Users\gsd10\Desktop\Monitoring Stats\LibreHardwareMonitor\LibreHardwareMonitorLib.dll")
+clr.AddReference(r"D:\0 ME STUFF\Monitoring Stats\LibreHardwareMonitor\LibreHardwareMonitorLib.dll")
 
 from LibreHardwareMonitor.Hardware import Computer, SensorType
 
