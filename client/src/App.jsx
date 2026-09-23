@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 
-const API_URL = "http://localhost:5000/api/stats";
+const API_URL = "https://monitoring-stats.onrender.com/api/stats";
 const POLL_INTERVAL_MS = 3000;
 
 function StatCard({ label, value, unit }) {

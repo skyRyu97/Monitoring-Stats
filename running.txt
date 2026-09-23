@@ -1,3 +1,9 @@
  node server.js 
  python agent.py
-npm run dev    inside the cd client 
+npm run dev    inside the cd client
+ 
+
+gsd10977user
+6EHV48owjgkIal41
+
+mongodb+srv://gsd10977user:6EHV48owjgkIal41@monitorsuser.fcwcqc0.mongodb.net/?appName=MonitorsUser

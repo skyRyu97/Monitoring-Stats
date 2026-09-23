@@ -43,7 +43,7 @@ while True:
     }
 
     try:
-        requests.post("http://localhost:5000/api/stats", json=payload, timeout=3)
+        requests.post("https://monitoring-stats.onrender.com/api/stats", json=payload, timeout=3)
         print("Sent:", payload)
     except requests.exceptions.RequestException:
         print("Server not reachable")
