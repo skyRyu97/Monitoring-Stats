@@ -8,8 +8,7 @@ const STALE_AFTER_MS = 15000;
 function getStatus(value, unit, isStale) {
   if (isStale) return "normal";
   if (value === undefined || value === null || unit !== "°C") return "normal";
-  if (value >= 85) return "hot";
-  if (value >= 60) return "warm";
+  if (value > 80) return "hot";
   return "normal";
 }
 
