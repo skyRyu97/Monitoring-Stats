@@ -3,5 +3,6 @@ LibreHardwareMonitor/
 __pycache__/
 *.pyc
 .env
+monitor-server/atlas-credentials.env
 venv/
 .venv/

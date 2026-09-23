@@ -28,9 +28,14 @@ def find(temps, must_have, must_not_have=()):
 while True:
     temps = get_temps()
 
+    print("=== ALL TEMPS ===")
+    for name, value in temps.items():
+        print(repr(name), "=", value)
+    print("=================")
+
     payload = {
         "machine": "my-pc",
-        "cpu_temp": find(temps, ["ryzen"], ["gpu"]) if False else find(temps, ["tctl"]) or find(temps, ["tdie"]),
+        "cpu_temp": find(temps, ["tctl"]) or find(temps, ["tdie"]),
         "gpu_temp": find(temps, ["gpu core"]),
         "gpu_hotspot": find(temps, ["hot"]),
         "gpu_mem_temp": find(temps, ["memory"], ["vr"]),
