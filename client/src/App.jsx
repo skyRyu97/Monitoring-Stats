@@ -4,22 +4,38 @@ import "./App.css";
 const API_URL = "https://monitoring-stats.onrender.com/api/stats";
 const POLL_INTERVAL_MS = 3000;
 const STALE_AFTER_MS = 15000;
+const HOT_THRESHOLD = 80;
 
-function getStatus(value, unit, isStale) {
-  if (isStale) return "normal";
-  if (value === undefined || value === null || unit !== "°C") return "normal";
-  if (value > 80) return "hot";
-  return "normal";
-}
+const TILES = [
+  { key: "cpu_temp", label: "CPU", unit: "°C", icon: "🖥️", color: "cyan", max: 100 },
+  { key: "gpu_temp", label: "GPU", unit: "°C", icon: "🎮", color: "emerald", max: 100 },
+  { key: "gpu_hotspot", label: "HOTSPOT", unit: "°C", icon: "🔥", color: "amber", max: 100 },
+  { key: "gpu_mem_temp", label: "VRAM", unit: "°C", icon: "💾", color: "purple", max: 100 },
+  { key: "ram", label: "RAM", unit: "%", icon: "📊", color: "indigo", max: 100 },
+];
 
-function StatCard({ label, value, unit, isStale }) {
-  const status = getStatus(value, unit, isStale);
+function Tile({ label, icon, color, unit, value, max, isStale }) {
+  const num = value !== undefined && value !== null ? value : 0;
+  const pct = Math.min(100, Math.max(0, (num / max) * 100));
+  const isHot = unit === "°C" && num > HOT_THRESHOLD && !isStale;
+
   return (
-    <div className={`stat-card status-${status} ${isStale ? "stale" : ""}`}>
-      <div className="stat-label">{label}</div>
-      <div className="stat-value">
+    <div className={`tile ${isHot ? "hot" : ""} ${isStale ? "stale" : ""}`}>
+      <div className="tile-top">
+        <span className="tile-label">
+          <span className="tile-icon">{icon}</span>
+          {label}
+        </span>
+      </div>
+      <div className="tile-value">
         {value !== undefined && value !== null ? value : "--"}
-        <span className="stat-unit">{unit}</span>
+        <span className="tile-unit">{unit}</span>
+      </div>
+      <div className="tile-bar-track">
+        <div
+          className={`tile-bar-fill ${isHot ? "hot" : `c-${color}`}`}
+          style={{ width: `${pct}%` }}
+        />
       </div>
     </div>
   );
@@ -36,7 +52,6 @@ export default function App() {
         const res = await fetch(API_URL);
         if (!res.ok) throw new Error(`Server responded ${res.status}`);
         const data = await res.json();
-        // Adjust this if your API returns { data: {...} } or an array
         setStats(Array.isArray(data) ? data[data.length - 1] : data);
         setError(null);
       } catch (err) {
@@ -57,18 +72,30 @@ export default function App() {
   const isStale = lastUpdate ? now - lastUpdate > STALE_AFTER_MS : true;
 
   return (
-    <div className="dashboard">
-      <div className={`status-dot ${isStale ? "offline" : "online"}`} title={isStale ? "Agent offline" : "Live"} />
-
-      {error && <div className="error-banner">Can't reach server: {error}</div>}
-
-      <div className="stat-stack">
-        <StatCard label="CPU Temp" value={stats?.cpu_temp} unit="°C" isStale={isStale} />
-        <StatCard label="GPU Temp" value={stats?.gpu_temp} unit="°C" isStale={isStale} />
-        <StatCard label="GPU Hotspot" value={stats?.gpu_hotspot} unit="°C" isStale={isStale} />
-        <StatCard label="GPU Mem Temp" value={stats?.gpu_mem_temp} unit="°C" isStale={isStale} />
-        <StatCard label="RAM Usage" value={stats?.ram} unit="%" isStale={isStale} />
+    <div className="telemetry-container">
+      <div className="tile status-tile">
+        <span className="status-pill">
+          <span className={`ping ${isStale ? "off" : "on"}`} />
+          <span className={`dot ${isStale ? "off" : "on"}`} />
+          <span className="status-text">SYS STAT</span>
+        </span>
+        <span className="status-ms">{POLL_INTERVAL_MS}ms</span>
       </div>
+
+      {error && <div className="error-banner">Can't reach server</div>}
+
+      {TILES.map((t) => (
+        <Tile
+          key={t.key}
+          label={t.label}
+          icon={t.icon}
+          color={t.color}
+          unit={t.unit}
+          max={t.max}
+          value={stats?.[t.key]}
+          isStale={isStale}
+        />
+      ))}
     </div>
   );
 }
