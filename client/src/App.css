@@ -18,7 +18,25 @@ body {
 .dashboard h1 {
   font-size: 1.6rem;
   font-weight: 600;
-  margin-bottom: 24px;
+  margin-bottom: 12px;
+}
+
+.live-badge {
+  font-size: 0.85rem;
+  margin-bottom: 20px;
+  color: #999;
+}
+
+.live-badge.online {
+  color: #5cd97a;
+}
+
+.live-badge.offline {
+  color: #f06565;
+}
+
+.last-update {
+  color: #777;
 }
 
 .error-banner {
@@ -42,6 +60,17 @@ body {
   border: 1px solid #2a2a2e;
   border-radius: 12px;
   padding: 18px;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.stat-card.status-warm {
+  border-color: #d9a441;
+  box-shadow: 0 0 12px rgba(217, 164, 65, 0.15);
+}
+
+.stat-card.status-hot {
+  border-color: #d94141;
+  box-shadow: 0 0 12px rgba(217, 65, 65, 0.2);
 }
 
 .stat-label {
@@ -53,6 +82,16 @@ body {
 .stat-value {
   font-size: 2rem;
   font-weight: 700;
+  transition: color 0.4s ease;
+}
+
+.status-warm .stat-value {
+  color: #f0b85c;
+}
+
+.stat-card.stale {
+  opacity: 0.5;
+  filter: grayscale(0.6);
 }
 
 .stat-unit {

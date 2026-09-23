@@ -3,10 +3,20 @@ import "./App.css";
 
 const API_URL = "https://monitoring-stats.onrender.com/api/stats";
 const POLL_INTERVAL_MS = 3000;
+const STALE_AFTER_MS = 15000;
 
-function StatCard({ label, value, unit }) {
+function getStatus(value, unit, isStale) {
+  if (isStale) return "normal";
+  if (value === undefined || value === null || unit !== "°C") return "normal";
+  if (value >= 80) return "hot";
+  if (value >= 60) return "warm";
+  return "normal";
+}
+
+function StatCard({ label, value, unit, isStale }) {
+  const status = getStatus(value, unit, isStale);
   return (
-    <div className="stat-card">
+    <div className={`stat-card status-${status} ${isStale ? "stale" : ""}`}>
       <div className="stat-label">{label}</div>
       <div className="stat-value">
         {value !== undefined && value !== null ? value : "--"}
@@ -19,6 +29,7 @@ function StatCard({ label, value, unit }) {
 export default function App() {
   const [stats, setStats] = useState(null);
   const [error, setError] = useState(null);
+  const [now, setNow] = useState(Date.now());
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -36,21 +47,36 @@ export default function App() {
 
     fetchStats();
     const interval = setInterval(fetchStats, POLL_INTERVAL_MS);
-    return () => clearInterval(interval);
+    const clock = setInterval(() => setNow(Date.now()), 1000);
+    return () => {
+      clearInterval(interval);
+      clearInterval(clock);
+    };
   }, []);
+
+  const lastUpdate = stats?.createdAt ? new Date(stats.createdAt).getTime() : null;
+  const isStale = lastUpdate ? now - lastUpdate > STALE_AFTER_MS : true;
 
   return (
     <div className="dashboard">
       <h1>PC Monitor</h1>
+      <div className={`live-badge ${isStale ? "offline" : "online"}`}>
+        {isStale ? "● Agent offline" : "● Live"}
+        {lastUpdate && (
+          <span className="last-update">
+            {" "}— last update {Math.max(0, Math.round((now - lastUpdate) / 1000))}s ago
+          </span>
+        )}
+      </div>
 
       {error && <div className="error-banner">Can't reach server: {error}</div>}
 
       <div className="stat-grid">
-        <StatCard label="CPU Temp" value={stats?.cpu_temp} unit="°C" />
-        <StatCard label="GPU Temp" value={stats?.gpu_temp} unit="°C" />
-        <StatCard label="GPU Hotspot" value={stats?.gpu_hotspot} unit="°C" />
-        <StatCard label="GPU Mem Temp" value={stats?.gpu_mem_temp} unit="°C" />
-        <StatCard label="RAM Usage" value={stats?.ram} unit="%" />
+        <StatCard label="CPU Temp" value={stats?.cpu_temp} unit="°C" isStale={isStale} />
+        <StatCard label="GPU Temp" value={stats?.gpu_temp} unit="°C" isStale={isStale} />
+        <StatCard label="GPU Hotspot" value={stats?.gpu_hotspot} unit="°C" isStale={isStale} />
+        <StatCard label="GPU Mem Temp" value={stats?.gpu_mem_temp} unit="°C" isStale={isStale} />
+        <StatCard label="RAM Usage" value={stats?.ram} unit="%" isStale={isStale} />
       </div>
     </div>
   );
