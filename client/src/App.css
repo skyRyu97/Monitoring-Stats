@@ -22,22 +22,24 @@ body {
   margin-bottom: 12px;
 }
 
-.live-badge {
-  font-size: 0.85rem;
-  margin-bottom: 20px;
-  color: #999;
+.status-dot {
+  position: fixed;
+  top: 8px;
+  right: 8px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  z-index: 10;
 }
 
-.live-badge.online {
-  color: #5cd97a;
+.status-dot.online {
+  background: #5cd97a;
+  box-shadow: 0 0 6px #5cd97a;
 }
 
-.live-badge.offline {
-  color: #f06565;
-}
-
-.last-update {
-  color: #777;
+.status-dot.offline {
+  background: #f06565;
+  box-shadow: 0 0 6px #f06565;
 }
 
 .error-banner {
@@ -50,9 +52,9 @@ body {
   font-size: 0.9rem;
 }
 
-.stat-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+.stat-stack {
+  display: flex;
+  flex-direction: column;
   gap: 10px;
 }
 
@@ -114,8 +116,7 @@ body {
   .stat-card {
     padding: 10px;
   }
-  .stat-grid {
-    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+  .stat-stack {
     gap: 6px;
   }
 }

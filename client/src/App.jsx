@@ -8,7 +8,7 @@ const STALE_AFTER_MS = 15000;
 function getStatus(value, unit, isStale) {
   if (isStale) return "normal";
   if (value === undefined || value === null || unit !== "°C") return "normal";
-  if (value >= 80) return "hot";
+  if (value >= 85) return "hot";
   if (value >= 60) return "warm";
   return "normal";
 }
@@ -59,19 +59,11 @@ export default function App() {
 
   return (
     <div className="dashboard">
-      <h1>PC Monitor</h1>
-      <div className={`live-badge ${isStale ? "offline" : "online"}`}>
-        {isStale ? "● Agent offline" : "● Live"}
-        {lastUpdate && (
-          <span className="last-update">
-            {" "}— last update {Math.max(0, Math.round((now - lastUpdate) / 1000))}s ago
-          </span>
-        )}
-      </div>
+      <div className={`status-dot ${isStale ? "offline" : "online"}`} title={isStale ? "Agent offline" : "Live"} />
 
       {error && <div className="error-banner">Can't reach server: {error}</div>}
 
-      <div className="stat-grid">
+      <div className="stat-stack">
         <StatCard label="CPU Temp" value={stats?.cpu_temp} unit="°C" isStale={isStale} />
         <StatCard label="GPU Temp" value={stats?.gpu_temp} unit="°C" isStale={isStale} />
         <StatCard label="GPU Hotspot" value={stats?.gpu_hotspot} unit="°C" isStale={isStale} />
